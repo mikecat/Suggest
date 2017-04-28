@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private final static String BUNDLE_KEY_QUERY = "MainActivity.query";
-    private final static String BUNDLE_KEY_SELECTION = "MainActivity.selection";
     private final static String BUNDLE_KEY_LIST = "MainActivity.list";
 
     private EditText inputText;
@@ -38,15 +36,6 @@ public class MainActivity extends AppCompatActivity {
         inputText = (EditText)findViewById(R.id.input_text);
         Button suggestButton = (Button)findViewById(R.id.suggest_button);
         ListView resultList = (ListView)findViewById(R.id.result_list);
-
-        if(savedInstanceState != null) {
-            String savedQuery = savedInstanceState.getString(BUNDLE_KEY_QUERY);
-            if (savedQuery != null) inputText.setText(savedQuery);
-            ArrayList<Integer> savedSelection = savedInstanceState.getIntegerArrayList(BUNDLE_KEY_SELECTION);
-            if (savedSelection != null && savedSelection.size() >= 2) {
-                inputText.setSelection(savedSelection.get(0), savedSelection.get(1));
-            }
-        }
 
         suggestButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,11 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putString(BUNDLE_KEY_QUERY, inputText.getText().toString());
-        ArrayList<Integer> selectionArray = new ArrayList<>();
-        selectionArray.add(inputText.getSelectionStart());
-        selectionArray.add(inputText.getSelectionEnd());
-        outState.putIntegerArrayList(BUNDLE_KEY_SELECTION, selectionArray);
+        super.onSaveInstanceState(outState);
 
         ArrayList<String> results = new ArrayList<>();
         int numResults = resultAdapter.getCount();
