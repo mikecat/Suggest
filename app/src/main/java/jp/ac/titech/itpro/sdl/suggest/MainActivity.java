@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final static String BUNDLE_KEY_QUERY = "MainActivity.query";
+    private final static String BUNDLE_KEY_SELECTION = "MainActivity.selection";
+    private final static String BUNDLE_KEY_LIST = "MainActivity.list";
 
     private EditText inputText;
     private ArrayAdapter<String> resultAdapter;
@@ -36,6 +39,15 @@ public class MainActivity extends AppCompatActivity {
         Button suggestButton = (Button)findViewById(R.id.suggest_button);
         ListView resultList = (ListView)findViewById(R.id.result_list);
 
+        if(savedInstanceState != null) {
+            String savedQuery = savedInstanceState.getString(BUNDLE_KEY_QUERY);
+            if (savedQuery != null) inputText.setText(savedQuery);
+            ArrayList<Integer> savedSelection = savedInstanceState.getIntegerArrayList(BUNDLE_KEY_SELECTION);
+            if (savedSelection != null && savedSelection.size() >= 2) {
+                inputText.setSelection(savedSelection.get(0), savedSelection.get(1));
+            }
+        }
+
         suggestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +56,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        resultAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+        ArrayList<String> arrayList = null;
+        if (savedInstanceState != null) {
+            arrayList = savedInstanceState.getStringArrayList(BUNDLE_KEY_LIST);
+        }
+        if (arrayList == null) arrayList = new ArrayList<>();
+        resultAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         resultList.setAdapter(resultAdapter);
         resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -55,6 +72,22 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(BUNDLE_KEY_QUERY, inputText.getText().toString());
+        ArrayList<Integer> selectionArray = new ArrayList<>();
+        selectionArray.add(inputText.getSelectionStart());
+        selectionArray.add(inputText.getSelectionEnd());
+        outState.putIntegerArrayList(BUNDLE_KEY_SELECTION, selectionArray);
+
+        ArrayList<String> results = new ArrayList<>();
+        int numResults = resultAdapter.getCount();
+        for (int i = 0; i < numResults; i++) {
+            results.add(resultAdapter.getItem(i));
+        }
+        outState.putStringArrayList(BUNDLE_KEY_LIST, results);
     }
 
     private final static int MSG_RESULT = 1111;
