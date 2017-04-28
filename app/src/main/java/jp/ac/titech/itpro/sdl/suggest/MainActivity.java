@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private final static String BUNDLE_KEY_LIST = "MainActivity.list";
+    private final static String BUNDLE_KEY_RESULT = "MainActivity.result";
 
     private EditText inputText;
     private ArrayAdapter<String> resultAdapter;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> arrayList = null;
         if (savedInstanceState != null) {
-            arrayList = savedInstanceState.getStringArrayList(BUNDLE_KEY_LIST);
+            arrayList = savedInstanceState.getStringArrayList(BUNDLE_KEY_RESULT);
         }
         if (arrayList == null) arrayList = new ArrayList<>();
         resultAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < numResults; i++) {
             results.add(resultAdapter.getItem(i));
         }
-        outState.putStringArrayList(BUNDLE_KEY_LIST, results);
+        outState.putStringArrayList(BUNDLE_KEY_RESULT, results);
     }
 
     private final static int MSG_RESULT = 1111;
